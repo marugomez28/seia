@@ -8,8 +8,10 @@ import {
   BookmarkCheck,
   TrendingUp,
   SlidersHorizontal,
+  BrainCircuit,
 } from "lucide-react";
 import BarraLateral from "@/components/BarraLateral";
+import ClasificadorIA from "@/components/ClasificadorIA";
 import PanelProcesos, { formatearMonedaCOP } from "@/components/PanelProcesos";
 import GestorParametros from "@/components/GestorParametros";
 import PanelHistorial from "@/components/PanelHistorial";
@@ -17,6 +19,7 @@ import ModalDetalleProceso from "@/components/ModalDetalleProceso";
 import { clienteApiSeia } from "@/services/apiClient";
 import {
   CrearParametroFormulario,
+  EstadoIA,
   EstadoInternoProceso,
   FiltrosActivosProcesos,
   HistorialFiltro,
@@ -33,6 +36,8 @@ const filtrosIniciales: FiltrosActivosProcesos = {
   estado: "Todos",
   cuantiaMinima: "",
   soloFavoritos: false,
+  afinidadIA: "Todos",
+  ordenarPor: "fecha",
 };
 
 export default function PaginaPrincipalSeia() {
@@ -46,6 +51,23 @@ export default function PaginaPrincipalSeia() {
     useState<ProcesoSecop | null>(null);
   const [cargandoDatos, setCargandoDatos] = useState(true);
   const [sincronizando, setSincronizando] = useState(false);
+  const [estadoIA, setEstadoIA] = useState<EstadoIA | null>(null);
+
+  const cargarEstadoIA = useCallback(async () => {
+    try {
+      setEstadoIA(await clienteApiSeia.obtenerEstadoIA());
+    } catch (error) {
+      setEstadoIA({
+        disponible: false,
+        servicio: "seia-services",
+        mensaje: error instanceof Error ? error.message : "No se pudo consultar la IA.",
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    cargarEstadoIA();
+  }, [cargarEstadoIA]);
 
   const cargarDatosDesdeSupabase = useCallback(async () => {
     setCargandoDatos(true);
@@ -86,8 +108,19 @@ export default function PaginaPrincipalSeia() {
   }, [cargarDatosDesdeSupabase]);
 
   const procesosFiltrados = useMemo(() => {
-    return procesos.filter((proc) => {
+    const filtrados = procesos.filter((proc) => {
       if (filtros.soloFavoritos && !proc.es_favorito) return false;
+      if (filtros.afinidadIA !== "Todos") {
+        const nivel = proc.afinidad_ia?.nivel;
+        if (filtros.afinidadIA === "Alta" && nivel !== "Alta") return false;
+        if (
+          filtros.afinidadIA === "Alta y Media" &&
+          nivel !== "Alta" &&
+          nivel !== "Media"
+        ) {
+          return false;
+        }
+      }
       if (
         filtros.modalidad !== "Todas" &&
         !proc.modalidad.toLowerCase().includes(filtros.modalidad.toLowerCase())
@@ -128,7 +161,26 @@ export default function PaginaPrincipalSeia() {
       }
       return true;
     });
+
+    if (filtros.ordenarPor === "afinidad") {
+      return [...filtrados].sort(
+        (a, b) =>
+          (b.afinidad_ia?.puntaje ?? Number.NEGATIVE_INFINITY) -
+          (a.afinidad_ia?.puntaje ?? Number.NEGATIVE_INFINITY)
+      );
+    }
+    return filtrados;
   }, [procesos, filtros]);
+
+  const totalAfinesIA = useMemo(
+    () => procesos.filter((p) => p.afinidad_ia?.nivel === "Alta").length,
+    [procesos]
+  );
+
+  const totalRevisarIA = useMemo(
+    () => procesos.filter((p) => p.afinidad_ia?.nivel === "Media").length,
+    [procesos]
+  );
 
   const cuantiaTotalAcumulada = useMemo(
     () =>
@@ -407,7 +459,12 @@ export default function PaginaPrincipalSeia() {
     procesos: {
       titulo: "Explorador y Gestión de Procesos SECOP II",
       descripcion:
-        "Contratos reales sincronizados mediante secopFetcher.ts desde Datos Abiertos hacia la tabla procesos_secop en Supabase.",
+        "Contratos reales sincronizados mediante secopFetcher.ts desde Datos Abiertos hacia la tabla procesos_secop en Supabase, evaluados en vivo por el modelo de IA de afinidad.",
+    },
+    ia: {
+      titulo: "Clasificador de Afinidad con Inteligencia Artificial",
+      descripcion:
+        "Modelo supervisado TF-IDF + SVM lineal entrenado con 166.097 contratos reales de SECOP II, servido por el microservicio seia-ml.",
     },
     parametros: {
       titulo: "Perfiles y Parámetros de Búsqueda Automatizada",
@@ -436,6 +493,7 @@ export default function PaginaPrincipalSeia() {
         totalHistorial={historial.length}
         sincronizando={sincronizando}
         alSincronizarAhora={manejarSincronizacionGeneral}
+        estadoIA={estadoIA}
       />
 
       <main className={styles.areaContenidoPrincipal}>
@@ -518,6 +576,27 @@ export default function PaginaPrincipalSeia() {
             transition={{ type: "spring", stiffness: 360, damping: 26 }}
           >
             <div className={styles.filaSuperiorMetrica}>
+              <span>Afines según IA</span>
+              <span className={styles.iconoCajaMetrica}>
+                <BrainCircuit size={16} />
+              </span>
+            </div>
+            <span className={styles.cifraMetrica}>
+              {estadoIA?.disponible === false ? "—" : `${totalAfinesIA} de ${procesos.length}`}
+            </span>
+            <span className={styles.notaMetrica}>
+              {estadoIA?.disponible === false
+                ? "Servicio de IA no disponible"
+                : `Nivel Alta · ${totalRevisarIA} más por revisar (Media)`}
+            </span>
+          </motion.div>
+
+          <motion.div
+            className={styles.tarjetaMetricaGlass}
+            whileHover={{ y: -2 }}
+            transition={{ type: "spring", stiffness: 360, damping: 26 }}
+          >
+            <div className={styles.filaSuperiorMetrica}>
               <span>Parámetros Activos</span>
               <span className={styles.iconoCajaMetrica}>
                 <SlidersHorizontal size={16} />
@@ -552,6 +631,18 @@ export default function PaginaPrincipalSeia() {
                 alSeleccionarProceso={setProcesoSeleccionado}
                 alEliminarProceso={manejarEliminarProceso}
               />
+            </motion.div>
+          )}
+
+          {vistaActiva === "ia" && (
+            <motion.div
+              key="vista-ia"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
+            >
+              <ClasificadorIA estadoIA={estadoIA} alRecargarEstado={cargarEstadoIA} />
             </motion.div>
           )}
 
@@ -669,6 +760,29 @@ export default function PaginaPrincipalSeia() {
                     </span>
                     <span className={styles.itemEndpoint}>
                       GET /api/especificacion (OpenAPI JSON)
+                    </span>
+                  </div>
+                </div>
+
+                <div className={styles.tarjetaCapacidad}>
+                  <h3 className={styles.nombreCapacidad}>
+                    Capacidad: clasificacion-afinidad
+                  </h3>
+                  <p className={styles.descripcionCapacidad}>
+                    Clasificación en vivo del objeto contractual con el modelo
+                    entrenado (TF-IDF + LinearSVC) servido por seia-ml, con
+                    explicación por términos y métricas del modelo.
+                  </p>
+                  <div className={styles.listaEndpoints}>
+                    <span className={styles.itemEndpoint}>GET /api/ia/estado</span>
+                    <span className={styles.itemEndpoint}>
+                      POST /api/ia/clasificar
+                    </span>
+                    <span className={styles.itemEndpoint}>
+                      GET /api/procesos (afinidad_ia)
+                    </span>
+                    <span className={styles.itemEndpoint}>
+                      seia-ml: GET /salud · GET /modelo · POST /predecir
                     </span>
                   </div>
                 </div>

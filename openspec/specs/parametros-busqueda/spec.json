@@ -1,4 +1,4 @@
-﻿{
+{
   "id": "parametros-busqueda",
   "title": "parametros-busqueda",
   "overview": "Proporciona operaciones CRUD directas contra la tabla real `parametros_busqueda` en Supabase PostgreSQL a través de la API REST de Express para administrar perfiles de búsqueda automatizada de contratos en SECOP II.",
@@ -48,7 +48,7 @@
     "format": "openspec"
   },
   "root": {
-    "path": "C:\\Users\\mmaru\\OneDrive\\Documentos\\automatizar secopII\\sep-app",
+    "path": "/Users/nicolascamargo/Library/Application Support/Claude/scratch-workspaces/56440d13-6ae1-4797-9169-547084f90307/a617a3f9-46ba-4a61-8669-0b95e9ab6868/scratch-2026-11-14-6c541f/seia",
     "source": "nearest"
   }
 }

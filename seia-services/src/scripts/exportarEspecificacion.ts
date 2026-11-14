@@ -21,6 +21,7 @@ function ejecutarValidacionYExportacion(): void {
     "parametros-busqueda",
     "procesos-secop",
     "historial-filtros",
+    "clasificacion-afinidad",
   ];
 
   for (const cap of capacidades) {

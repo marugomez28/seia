@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { X, ExternalLink, Save } from "lucide-react";
 import { ProcesoSecop } from "@/types/seia";
 import { formatearFechaCorta, formatearMonedaCOP } from "./PanelProcesos";
+import { AnalisisAfinidad } from "./AfinidadIA";
 import styles from "./ModalDetalleProceso.module.css";
 
 interface PropiedadesModalDetalleProceso {
@@ -114,6 +115,13 @@ export default function ModalDetalleProceso({
               <p className={styles.parrafoDescripcion}>
                 {proceso.objeto_contrato}
               </p>
+            </div>
+
+            <div className={styles.seccionTexto}>
+              <span className={styles.subtituloSeccion}>
+                Análisis de afinidad del modelo de IA (calculado en vivo)
+              </span>
+              <AnalisisAfinidad afinidad={proceso.afinidad_ia} />
             </div>
 
             <div className={styles.seccionTexto}>

@@ -1,0 +1,353 @@
+.rejillaClasificador {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .rejillaClasificador {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panelPrincipal,
+.panelModelo {
+  background: var(--glass-surface);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--shadow-glass);
+}
+
+.cabeceraPanel {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.iconoPanel {
+  display: inline-flex;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-primary);
+  color: var(--text-primary);
+}
+
+.tituloPanel {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.textoAyuda {
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  margin-top: 4px;
+}
+
+.areaTexto {
+  min-height: 120px;
+  resize: vertical;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: rgba(11, 12, 14, 0.65);
+  color: var(--text-primary);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.areaTexto:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+}
+
+.filaEjemplos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chipEjemplo {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.chipEjemplo:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-border);
+}
+
+.botonClasificar {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--accent-primary);
+  background: var(--accent-primary);
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.botonClasificar:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.tarjetaResultado {
+  border: 1px solid var(--glass-border);
+  border-left: 3px solid var(--accent-primary);
+  border-radius: var(--radius-md);
+  background: rgba(11, 12, 14, 0.55);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.filaResultado {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.etiqueta {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.nivelResultado {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 2px;
+}
+
+.escala {
+  position: relative;
+  height: 10px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.zonaMedia {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--accent-soft);
+}
+
+.zonaAlta {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  border-radius: 0 5px 5px 0;
+  background: var(--accent-glow);
+}
+
+.marcador {
+  position: absolute;
+  top: -5px;
+  width: 4px;
+  height: 20px;
+  margin-left: -2px;
+  border-radius: 2px;
+  background: var(--text-primary);
+  box-shadow: 0 0 0 2px rgba(11, 12, 14, 0.9);
+}
+
+.leyendaEscala {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.datosEjecucion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.datosEjecucion span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.datosEjecucion strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.historial ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.itemHistorial {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.textoHistorial {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cabeceraModelo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.botonRecargar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--glass-border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  cursor: pointer;
+}
+
+.botonRecargar:hover {
+  color: var(--text-primary);
+}
+
+.estadoServicio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.punto {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.estadoActivo {
+  color: var(--text-primary);
+}
+
+.estadoActivo .punto {
+  background: #4f9d69;
+  box-shadow: 0 0 0 3px rgba(79, 157, 105, 0.18);
+}
+
+.estadoInactivo {
+  color: var(--text-secondary);
+}
+
+.estadoInactivo .punto {
+  background: var(--accent-hover);
+}
+
+.listaDatos {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.listaDatos div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.82rem;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: 8px;
+}
+
+.listaDatos dt {
+  color: var(--text-muted);
+}
+
+.listaDatos dd {
+  color: var(--text-primary);
+  text-align: right;
+}
+
+.rejillaMetricas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(84px, 1fr));
+  gap: 8px;
+}
+
+.celdaMetrica {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--glass-border);
+  background: rgba(11, 12, 14, 0.5);
+}
+
+.valorMetrica {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.nombreMetrica {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.notaModelo {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.notaModelo code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+}

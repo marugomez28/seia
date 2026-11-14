@@ -29,4 +29,14 @@ Para ejecutarlos en local hace falta Python 3.9 o superior con `pandas`, `numpy`
 Los `.ipynb` se entregan **ya ejecutados**, con todas las salidas, métricas y gráficas visibles. Resumen:
 
 - **Clustering**: 4 segmentos (ejecutados y pagados, sin pagos registrados, prorrogados, y cortos de alto valor mensual), evaluados con Silhouette, Davies-Bouldin y Calinski-Harabasz.
-- **Clasificación**: Accuracy, Precision, Recall, F1-Score y matriz de confusión sobre un 20 % de prueba estratificado. El notebook 02 guarda el modelo entrenado en `modelo_afinidad_seia.joblib` (también ignorado por git).
+- **Clasificación**: Accuracy, Precision, Recall, F1-Score y matriz de confusión sobre un 20 % de prueba estratificado. El notebook 02 guarda el modelo entrenado en `modelo_afinidad_seia.joblib`.
+
+## Del notebook a la aplicación
+
+El modelo que exporta el notebook 02 es el que usa la aplicación en vivo:
+
+1. El notebook entrena y evalúa el modelo y lo guarda con `joblib.dump(...)` en `modelo_afinidad_seia.joblib`. En esta carpeta ese archivo está en `.gitignore`.
+2. La copia versionada que carga la aplicación está en [`seia-ml/modelo/modelo_afinidad_seia.joblib`](../seia-ml/modelo/), con sus métricas en [`metadatos.json`](../seia-ml/modelo/metadatos.json).
+3. El microservicio [`seia-ml`](../seia-ml/README.md) la carga una sola vez al iniciar, sin reentrenar, y `seia-services` la usa para calcular la afinidad de cada proceso de SECOP II.
+
+**Para actualizar el modelo:** vuelve a ejecutar el notebook 02, copia el nuevo `.joblib` a `seia-ml/modelo/`, actualiza `metadatos.json` y reinicia `seia-ml`.

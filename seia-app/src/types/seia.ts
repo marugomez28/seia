@@ -12,7 +12,65 @@ export type EstadoInternoProceso =
   | "Presentado"
   | "Descartado";
 
-export type VistaActiva = "procesos" | "parametros" | "historial" | "openspec";
+export type VistaActiva =
+  | "procesos"
+  | "ia"
+  | "parametros"
+  | "historial"
+  | "openspec";
+
+/**
+ * Integración con el modelo de IA (seia-ml) a través de seia-services.
+ */
+export type NivelAfinidadIA = "Alta" | "Media" | "Baja";
+
+export interface TerminoClaveIA {
+  termino: string;
+  contribucion: number;
+  direccion: "afin" | "no_afin";
+}
+
+export interface AfinidadIA {
+  puntaje: number;
+  afin: boolean;
+  nivel: NivelAfinidadIA;
+  terminos_reconocidos: number;
+  terminos_clave?: TerminoClaveIA[];
+}
+
+export interface ResultadoClasificacionIA extends AfinidadIA {
+  texto: string;
+}
+
+export interface RespuestaClasificacionIA {
+  resultados: ResultadoClasificacionIA[];
+  tiempo_inferencia_ms: number;
+  version_modelo: string;
+  umbrales: { balanceado: number; exploracion: number };
+  calculado_en: string;
+}
+
+export interface ModeloIA {
+  version: string;
+  tipo: string;
+  terminos_vocabulario: number;
+  umbrales: { balanceado: number; exploracion: number };
+  entrenado_en?: string;
+  notebook?: string;
+  fuente_datos?: string;
+  variable_objetivo?: string;
+  registros?: Record<string, number>;
+  metricas_prueba?: Record<string, number>;
+  matriz_confusion_prueba?: Record<string, number>;
+  hiperparametros?: Record<string, unknown>;
+}
+
+export interface EstadoIA {
+  disponible: boolean;
+  servicio: string;
+  mensaje?: string;
+  modelo?: ModeloIA;
+}
 
 export type TipoParametroBusqueda =
   | "palabra_clave"
@@ -59,6 +117,8 @@ export interface ProcesoSecop {
   es_favorito: boolean;
   notas_analista: string;
   fecha_sincronizacion: string;
+  /** Afinidad calculada en vivo por el modelo de IA (null si seia-ml no responde). */
+  afinidad_ia?: AfinidadIA | null;
 }
 
 export interface HistorialFiltro {
@@ -80,4 +140,7 @@ export interface FiltrosActivosProcesos {
   estado: string;
   cuantiaMinima: string;
   soloFavoritos: boolean;
+  /** "Todos" | "Alta" (solo afines) | "Alta y Media" (afines y por revisar) */
+  afinidadIA: string;
+  ordenarPor: "fecha" | "afinidad";
 }

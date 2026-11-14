@@ -190,21 +190,35 @@ export default function PaginaDocumentacionSeia() {
           </div>
 
           <p className={styles.parrafoSeccion}>
-            El sistema se integra con un modelo de clasificación de{" "}
+            El sistema integra un modelo de clasificación de{" "}
             <strong>Procesamiento de Lenguaje Natural (NLP)</strong> entrenado
-            en un <strong>Jupyter Notebook externo</strong> para analizar las
-            descripciones técnicas de los procedimientos y predecir
-            automáticamente la relevancia contractual de cada proceso frente al
-            portafolio de MGD Bitforge S.A.S.
+            en <code>notebooks/02_clasificacion_afinidad_secop.ipynb</code> con
+            166.097 contratos reales de SECOP II. El microservicio{" "}
+            <strong>seia-ml</strong> (FastAPI) carga el modelo ya entrenado
+            (<code>modelo_afinidad_seia.joblib</code>) y calcula{" "}
+            <strong>en vivo</strong> la afinidad de cada proceso con el
+            portafolio de MGD Bitforge S.A.S. En el conjunto de prueba obtuvo
+            accuracy 0,984, precision 0,646, recall 0,692, F1 0,668 y ROC-AUC
+            0,966.
           </p>
 
           <div className={styles.listaPuntos}>
             <div className={styles.itemPunto}>
               <Cpu size={16} />
               <span>
-                Vectorización de texto sobre el objeto contractual y evaluación
-                supervisada de afinidad temática en Gestión Documental,
-                Archivística y Tecnología SGDEA.
+                Vectorización TF-IDF (unigramas y bigramas) del objeto
+                contractual y clasificación con una SVM lineal (LinearSVC)
+                de la afinidad con gestión documental, archivística y
+                tecnología SGDEA.
+              </span>
+            </div>
+            <div className={styles.itemPunto}>
+              <Cpu size={16} />
+              <span>
+                Flujo en vivo: seia-app → seia-services (GET /api/procesos, POST
+                /api/ia/clasificar) → seia-ml (POST /predecir). Cada respuesta
+                incluye el puntaje, el nivel (Alta, Media o Baja) y los términos
+                que explican la decisión.
               </span>
             </div>
           </div>

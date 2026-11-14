@@ -1,8 +1,8 @@
-﻿{
+{
   "id": "procesos-secop",
   "title": "procesos-secop",
   "overview": "Gestiona la extracción real de procesos desde el endpoint SODA de Datos Abiertos de SECOP II (`https://www.datos.gov.co/resource/jbjy-vk9h.json`) mediante `secopFetcher.ts` y su persistencia en la tabla `procesos_secop` de Supabase evitando duplicados por `uid_secop`.",
-  "requirementCount": 3,
+  "requirementCount": 4,
   "requirements": [
     {
       "name": "Sincronizar contratos reales con secopFetcher",
@@ -25,6 +25,24 @@
       ]
     },
     {
+      "name": "Calcular la afinidad de los procesos en vivo",
+      "text": "El sistema SHALL incluir en cada proceso devuelto por `GET /api/procesos` el campo `afinidad_ia`, calculado por el modelo de afinidad sobre la descripción del proceso en el momento de la consulta, y SHALL indicar con `iaDisponible` si el modelo pudo evaluar los procesos.",
+      "scenarios": [
+        {
+          "name": "Procesos evaluados por el modelo en vivo",
+          "rawText": "- **WHEN** el dashboard solicita `GET /api/procesos` y el servicio de inferencia está disponible\n- **THEN** cada proceso incluye `afinidad_ia` con `puntaje`, `afin`, `nivel` y `terminos_clave`, y la respuesta incluye `iaDisponible: true`"
+        },
+        {
+          "name": "Ordenar por afinidad",
+          "rawText": "- **WHEN** el cliente solicita `GET /api/procesos?ordenarPor=afinidad`\n- **THEN** los procesos se devuelven ordenados de mayor a menor puntaje de afinidad"
+        },
+        {
+          "name": "Servicio de IA no disponible",
+          "rawText": "- **WHEN** el dashboard solicita `GET /api/procesos` y el servicio de inferencia no responde\n- **THEN** la respuesta tiene código HTTP 200 con los procesos de Supabase, `afinidad_ia: null` en cada proceso e `iaDisponible: false`"
+        }
+      ]
+    },
+    {
       "name": "Actualizar y eliminar procesos en Supabase",
       "text": "El sistema SHALL permitir actualizar el seguimiento interno (`PATCH /api/procesos/:id`) y eliminar registros (`DELETE /api/procesos/:id`) directamente en la tabla `procesos_secop` de Supabase.",
       "scenarios": [
@@ -40,7 +58,7 @@
     "format": "openspec"
   },
   "root": {
-    "path": "C:\\Users\\mmaru\\OneDrive\\Documentos\\automatizar secopII\\sep-app",
+    "path": "/Users/nicolascamargo/Library/Application Support/Claude/scratch-workspaces/56440d13-6ae1-4797-9169-547084f90307/a617a3f9-46ba-4a61-8669-0b95e9ab6868/scratch-2026-11-14-6c541f/seia",
     "source": "nearest"
   }
 }

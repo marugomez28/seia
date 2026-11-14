@@ -221,3 +221,22 @@
     border-bottom: 1px solid var(--glass-border);
   }
 }
+
+/* Estado del microservicio de IA (seia-ml) */
+.estadoIA {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0 12px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--glass-border-strong);
+  color: var(--text-muted);
+  font-size: 0.76rem;
+}
+
+.estadoIAActivo {
+  border: 1px solid var(--accent-border);
+  background: var(--accent-soft);
+  color: var(--text-primary);
+}

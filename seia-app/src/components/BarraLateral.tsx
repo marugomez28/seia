@@ -11,8 +11,9 @@ import {
   RefreshCw,
   ShieldCheck,
   BookOpen,
+  BrainCircuit,
 } from "lucide-react";
-import { VistaActiva } from "@/types/seia";
+import { EstadoIA, VistaActiva } from "@/types/seia";
 import styles from "./BarraLateral.module.css";
 
 interface PropiedadesBarraLateral {
@@ -23,6 +24,7 @@ interface PropiedadesBarraLateral {
   totalHistorial: number;
   sincronizando: boolean;
   alSincronizarAhora: () => void;
+  estadoIA: EstadoIA | null;
 }
 
 const elementosMenu: {
@@ -34,6 +36,11 @@ const elementosMenu: {
     id: "procesos",
     etiqueta: "Procesos SECOP II",
     icono: Briefcase,
+  },
+  {
+    id: "ia",
+    etiqueta: "Clasificador IA",
+    icono: BrainCircuit,
   },
   {
     id: "parametros",
@@ -60,6 +67,7 @@ export default function BarraLateral({
   totalHistorial,
   sincronizando,
   alSincronizarAhora,
+  estadoIA,
 }: PropiedadesBarraLateral) {
   const obtenerContador = (id: VistaActiva): number | null => {
     if (id === "procesos") return totalProcesos;
@@ -146,6 +154,21 @@ export default function BarraLateral({
           Sincroniza procesos reales desde Datos Abiertos (p6dx-8zbt.json)
           según los parámetros activos en Supabase.
         </p>
+        <div
+          className={`${styles.estadoIA} ${
+            estadoIA?.disponible ? styles.estadoIAActivo : ""
+          }`}
+          title={estadoIA?.mensaje || estadoIA?.servicio}
+        >
+          <BrainCircuit size={14} />
+          <span>
+            {estadoIA === null
+              ? "Verificando modelo de IA..."
+              : estadoIA.disponible
+                ? `Modelo IA v${estadoIA.modelo?.version ?? "?"} activo`
+                : "Modelo IA no disponible"}
+          </span>
+        </div>
         <motion.button
           type="button"
           className={styles.botonSincronizarRapido}
