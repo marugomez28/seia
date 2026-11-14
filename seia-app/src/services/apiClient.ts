@@ -7,8 +7,13 @@ import {
   ProcesoSecop,
 } from "@/types/seia";
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+const URL_BASE_CRUDA = (
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api"
+).replace(/\/+$/, "");
+
+const API_BASE_URL = URL_BASE_CRUDA.endsWith("/api")
+  ? URL_BASE_CRUDA
+  : `${URL_BASE_CRUDA}/api`;
 
 /**
  * Extrae el detalle legible del objeto error devuelto por Express / Supabase.

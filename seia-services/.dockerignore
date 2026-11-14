@@ -1,0 +1,10 @@
+# Exclusiones para la construcción de imagen Docker de seia-services
+node_modules
+**/node_modules
+dist
+**/dist
+.env
+.env.*
+npm-debug.log*
+.git
+.gitignore
