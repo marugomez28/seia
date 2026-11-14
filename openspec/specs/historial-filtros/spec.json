@@ -1,4 +1,4 @@
-﻿{
+{
   "id": "historial-filtros",
   "title": "historial-filtros",
   "overview": "Registra y consulta directamente en la tabla `historial_filtros` de Supabase la auditoría de cada ejecución de sincronización realizada por `secopFetcher.ts`.",
@@ -30,7 +30,7 @@
     "format": "openspec"
   },
   "root": {
-    "path": "C:\\Users\\mmaru\\OneDrive\\Documentos\\automatizar secopII\\sep-app",
+    "path": "/Users/nicolascamargo/Library/Application Support/Claude/scratch-workspaces/56440d13-6ae1-4797-9169-547084f90307/a617a3f9-46ba-4a61-8669-0b95e9ab6868/scratch-2026-11-14-6c541f/seia",
     "source": "nearest"
   }
 }

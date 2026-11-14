@@ -21,6 +21,7 @@ import {
   eliminarHistorial,
   listarHistorial,
 } from "../controllers/historialController";
+import { clasificarTextos, obtenerEstadoIA } from "../controllers/iaController";
 
 const router = Router();
 
@@ -86,5 +87,11 @@ router.delete("/procesos/:id", eliminarProceso);
 router.get("/historial", listarHistorial);
 router.post("/historial", crearHistorial);
 router.delete("/historial/:id", eliminarHistorial);
+
+/**
+ * 4. Rutas de Inteligencia Artificial (pasarela hacia el microservicio seia-ml)
+ */
+router.get("/ia/estado", obtenerEstadoIA);
+router.post("/ia/clasificar", clasificarTextos);
 
 export default router;

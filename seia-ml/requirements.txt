@@ -1,0 +1,7 @@
+# Dependencias de ejecución del servicio de inferencia seia-ml.
+# scikit-learn se fija en la MISMA versión con la que se serializó el modelo (ver modelo/metadatos.json).
+fastapi==0.115.6
+uvicorn==0.32.1
+scikit-learn==1.6.1
+numpy==2.0.2
+joblib==1.5.3

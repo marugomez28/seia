@@ -1,0 +1,51 @@
+{
+  "nombre": "modelo_afinidad_seia",
+  "version": "1.0.0",
+  "tipo": "TF-IDF (unigramas y bigramas) + LinearSVC",
+  "entrenado_en": "2026-11-14",
+  "notebook": "notebooks/02_clasificacion_afinidad_secop.ipynb",
+  "fuente_datos": "SECOP II - Contratos Electrónicos (datos.gov.co, jbjy-vk9h): contratos firmados en 2024, muestra sistemática del 30 % (id_contrato terminado en 1, 4 o 7)",
+  "variable_objetivo": "afin_portafolio = 1 si el código UNSPSC pertenece al segmento 43 (TIC), las familias 8111 (servicios informáticos) u 8116 (entrega de servicios de TI), o los productos 80161506 (archivo de datos) o 78131804 (custodia de documentos)",
+  "variable_entrada": "objeto_del_contrato (texto libre)",
+  "registros": {
+    "descargados": 267158,
+    "unicos_tras_limpieza": 166097,
+    "entrenamiento": 132877,
+    "prueba": 33220,
+    "afines": 3895,
+    "tasa_afines": 0.0235
+  },
+  "hiperparametros": {
+    "C": 1.0,
+    "class_weight": "balanced",
+    "ngram_range": [1, 2],
+    "min_df": 2,
+    "max_df": 0.9,
+    "sublinear_tf": true,
+    "seleccion": "GridSearchCV, StratifiedKFold de 3 particiones, scoring F1"
+  },
+  "metricas_prueba": {
+    "accuracy": 0.9839,
+    "precision": 0.6463,
+    "recall": 0.6919,
+    "f1": 0.6683,
+    "f1_macro": 0.83,
+    "roc_auc": 0.966,
+    "average_precision": 0.6976
+  },
+  "matriz_confusion_prueba": {
+    "verdaderos_negativos": 32146,
+    "falsos_positivos": 295,
+    "falsos_negativos": 240,
+    "verdaderos_positivos": 539
+  },
+  "metricas_validacion_cruzada": {
+    "f1": 0.6605
+  },
+  "versiones_entrenamiento": {
+    "python": "3.9",
+    "scikit_learn": "1.6.1",
+    "numpy": "2.0.2",
+    "joblib": "1.5.3"
+  }
+}

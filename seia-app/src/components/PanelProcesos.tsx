@@ -19,6 +19,7 @@ import {
   FiltrosActivosProcesos,
   ProcesoSecop,
 } from "@/types/seia";
+import { InsigniaAfinidad } from "./AfinidadIA";
 import styles from "./PanelProcesos.module.css";
 
 interface PropiedadesPanelProcesos {
@@ -233,6 +234,44 @@ export default function PanelProcesos({
               <option value="1500000000">Desde $ 1.500.000.000</option>
             </select>
           </div>
+
+          <div className={styles.grupoCampo}>
+            <label className={styles.etiquetaCampo} htmlFor="filtro-afinidad">
+              Afinidad IA (modelo en vivo)
+            </label>
+            <select
+              id="filtro-afinidad"
+              className={styles.selectorInput}
+              value={filtros.afinidadIA}
+              onChange={(e) =>
+                alCambiarFiltros({ ...filtros, afinidadIA: e.target.value })
+              }
+            >
+              <option value="Todos">Todas las afinidades</option>
+              <option value="Alta">Solo afines (Alta)</option>
+              <option value="Alta y Media">Afines y por revisar (Alta y Media)</option>
+            </select>
+          </div>
+
+          <div className={styles.grupoCampo}>
+            <label className={styles.etiquetaCampo} htmlFor="orden-procesos">
+              Ordenar por
+            </label>
+            <select
+              id="orden-procesos"
+              className={styles.selectorInput}
+              value={filtros.ordenarPor}
+              onChange={(e) =>
+                alCambiarFiltros({
+                  ...filtros,
+                  ordenarPor: e.target.value as FiltrosActivosProcesos["ordenarPor"],
+                })
+              }
+            >
+              <option value="fecha">Fecha de publicación</option>
+              <option value="afinidad">Afinidad IA (mayor a menor)</option>
+            </select>
+          </div>
         </div>
       </section>
 
@@ -272,6 +311,7 @@ export default function PanelProcesos({
               <div className={styles.cabeceraTarjeta}>
                 <div className={styles.bloqueIdentificacion}>
                   <div className={styles.filaInsignias}>
+                    <InsigniaAfinidad afinidad={proceso.afinidad_ia} />
                     <span className={styles.insigniaUnspsc}>
                       <Tag size={12} />
                       <span>

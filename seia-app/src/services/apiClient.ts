@@ -1,10 +1,12 @@
 import {
   CrearParametroFormulario,
+  EstadoIA,
   EstadoInternoProceso,
   FiltrosActivosProcesos,
   HistorialFiltro,
   ParametroBusqueda,
   ProcesoSecop,
+  RespuestaClasificacionIA,
 } from "@/types/seia";
 
 const URL_BASE_CRUDA = (
@@ -239,6 +241,54 @@ export const clienteApiSeia = {
     }
 
     return (json.datos || []) as HistorialFiltro[];
+  },
+
+  /**
+   * Estado del microservicio de IA (seia-ml) y metadatos del modelo entrenado.
+   */
+  async obtenerEstadoIA(): Promise<EstadoIA> {
+    const respuesta = await fetch(`${API_BASE_URL}/ia/estado`, {
+      cache: "no-store",
+    });
+    const json = await respuesta.json();
+    if (!respuesta.ok || !json.exito) {
+      throw new Error(
+        extraerMensajeError(json, "No fue posible consultar el estado de la IA.")
+      );
+    }
+    return {
+      disponible: Boolean(json.disponible),
+      servicio: json.servicio,
+      mensaje: json.mensaje,
+      modelo: json.modelo,
+    };
+  },
+
+  /**
+   * Clasifica EN VIVO uno o varios objetos contractuales con el modelo entrenado.
+   */
+  async clasificarTexto(
+    textos: string | string[]
+  ): Promise<RespuestaClasificacionIA> {
+    const cuerpo = Array.isArray(textos) ? { textos } : { texto: textos };
+    const respuesta = await fetch(`${API_BASE_URL}/ia/clasificar`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(cuerpo),
+    });
+    const json = await respuesta.json();
+    if (!respuesta.ok || !json.exito) {
+      throw new Error(
+        extraerMensajeError(json, "Error al clasificar el texto con el modelo de IA.")
+      );
+    }
+    return {
+      resultados: json.datos,
+      tiempo_inferencia_ms: json.tiempo_inferencia_ms,
+      version_modelo: json.version_modelo,
+      umbrales: json.umbrales,
+      calculado_en: json.calculado_en,
+    };
   },
 
   async eliminarHistorial(id: string): Promise<void> {

@@ -1,8 +1,17 @@
 # ==============================================================================
 # SEIA - Orquestación de Contenedores con Docker Compose
-# Servicios: seia-services (Backend Express) y seia-app (Frontend Next.js)
+# Servicios: seia-ml (IA - FastAPI), seia-services (Backend Express) y seia-app (Frontend Next.js)
 # ==============================================================================
 services:
+  seia-ml:
+    container_name: seia-ml
+    build: ./seia-ml
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    networks:
+      - seia-net
+
   seia-services:
     container_name: seia-services
     build: ./seia-services
@@ -10,6 +19,12 @@ services:
       - "4000:4000"
     env_file:
       - ./seia-services/.env
+    environment:
+      # Dentro de la red de Docker el backend llega al modelo por el nombre del servicio
+      SEIA_ML_URL: http://seia-ml:8000
+    depends_on:
+      seia-ml:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - seia-net

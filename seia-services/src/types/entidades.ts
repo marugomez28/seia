@@ -97,6 +97,37 @@ export interface ProcesoSecop {
   es_favorito?: boolean;
   notas_analista?: string;
   fecha_sincronizacion?: string;
+  /** Afinidad calculada en vivo por el modelo de IA (null si seia-ml no está disponible). */
+  afinidad_ia?: ResultadoAfinidadIA | null;
+}
+
+/**
+ * Integración con el modelo de IA (seia-ml): afinidad del objeto contractual
+ * con el portafolio de MGD Bitforge S.A.S.
+ */
+export type NivelAfinidadIA = "Alta" | "Media" | "Baja";
+
+export interface TerminoClaveIA {
+  termino: string;
+  contribucion: number;
+  direccion: "afin" | "no_afin";
+}
+
+export interface ResultadoAfinidadIA {
+  puntaje: number;
+  afin: boolean;
+  nivel: NivelAfinidadIA;
+  terminos_reconocidos: number;
+  terminos_clave?: TerminoClaveIA[];
+}
+
+export interface RespuestaPrediccionIA {
+  resultados: ResultadoAfinidadIA[];
+  total: number;
+  tiempo_inferencia_ms: number;
+  version_modelo: string;
+  umbrales: { balanceado: number; exploracion: number };
+  calculado_en: string;
 }
 
 export interface FiltrosConsultaProcesos {

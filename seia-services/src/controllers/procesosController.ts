@@ -1,7 +1,50 @@
 import { Request, Response } from "express";
 import { supabase } from "../config/supabase";
 import { sincronizarContratosSecopConSupabase } from "../services/secopFetcher";
+import { describirErrorIA, predecirAfinidad } from "../services/clienteIA";
 import { ProcesoSecop } from "../types/entidades";
+
+/**
+ * Calcula EN VIVO la afinidad de cada proceso con el modelo de IA (seia-ml),
+ * enviando todas las descripciones en un solo lote. Si el servicio de IA no
+ * responde, los procesos se devuelven igual, con afinidad_ia = null.
+ */
+async function enriquecerConAfinidadIA(procesos: ProcesoSecop[]): Promise<{
+  procesos: ProcesoSecop[];
+  iaDisponible: boolean;
+  meta: Record<string, unknown>;
+}> {
+  if (procesos.length === 0) {
+    return { procesos, iaDisponible: true, meta: {} };
+  }
+
+  try {
+    const textos = procesos.map(
+      (p) => p.descripcion || p.objeto_contrato || "Sin descripción"
+    );
+    const prediccion = await predecirAfinidad(textos, true);
+    return {
+      procesos: procesos.map((p, i) => ({
+        ...p,
+        afinidad_ia: prediccion.resultados[i] ?? null,
+      })),
+      iaDisponible: true,
+      meta: {
+        tiempo_inferencia_ms: prediccion.tiempo_inferencia_ms,
+        version_modelo: prediccion.version_modelo,
+        umbrales: prediccion.umbrales,
+        calculado_en: prediccion.calculado_en,
+      },
+    };
+  } catch (error) {
+    console.warn("[SEIA IA] Afinidad no disponible:", describirErrorIA(error));
+    return {
+      procesos: procesos.map((p) => ({ ...p, afinidad_ia: null })),
+      iaDisponible: false,
+      meta: { mensaje: describirErrorIA(error) },
+    };
+  }
+}
 
 /**
  * Normaliza un registro leído de la tabla 'procesos_secop' en Supabase
@@ -171,9 +214,22 @@ export const listarProcesos = async (
         (b.fecha_publicacion || "").localeCompare(a.fecha_publicacion || "")
       );
 
+    const enriquecido = await enriquecerConAfinidadIA(procesos);
+    procesos = enriquecido.procesos;
+
+    if (req.query.ordenarPor === "afinidad") {
+      procesos = [...procesos].sort(
+        (a, b) =>
+          (b.afinidad_ia?.puntaje ?? Number.NEGATIVE_INFINITY) -
+          (a.afinidad_ia?.puntaje ?? Number.NEGATIVE_INFINITY)
+      );
+    }
+
     res.status(200).json({
       exito: true,
       total: procesos.length,
+      iaDisponible: enriquecido.iaDisponible,
+      ia: enriquecido.meta,
       datos: procesos,
     });
   } catch (error: any) {

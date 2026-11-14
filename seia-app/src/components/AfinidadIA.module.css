@@ -1,0 +1,113 @@
+.insignia {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.74rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  border: 1px solid var(--glass-border);
+}
+
+.nivelAlta {
+  background: var(--accent-soft);
+  border-color: var(--accent-primary);
+  color: var(--text-primary);
+}
+
+.nivelMedia {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed var(--accent-border);
+  color: var(--text-primary);
+}
+
+.nivelBaja {
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--text-muted);
+}
+
+.nivelSinDato {
+  background: transparent;
+  color: var(--text-muted);
+  border-style: dotted;
+}
+
+.bloqueAnalisis {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filaResumen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.notaResumen {
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+}
+
+.subtitulo {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.listaTerminos {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filaTermino {
+  display: grid;
+  grid-template-columns: minmax(120px, 34%) 1fr 64px;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.84rem;
+}
+
+.nombreTermino {
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pistaBarra {
+  height: 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.barra {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+}
+
+.barraAfin {
+  background: var(--accent-hover);
+}
+
+.barraNoAfin {
+  background: var(--text-muted);
+}
+
+.valorTermino {
+  text-align: right;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.sinTerminos {
+  color: var(--text-muted);
+  font-size: 0.84rem;
+}
