@@ -14,22 +14,27 @@ dotenv.config({ override: true });
 
 const app: Application = express();
 const PUERTO = Number(process.env.PORT || 4000);
-const ORIGEN_CORS = process.env.CORS_ORIGIN || "http://localhost:3000";
+const HOST = "0.0.0.0";
+const ORIGEN_CORS = process.env.CORS_ORIGIN || "*";
 
 /**
  * Carga el contrato de la API generado con OpenSpec (openapi.json u openapi.yaml)
  * para servirlo en el visor interactivo Swagger UI en GET /api-docs.
  */
 function cargarEspecificacionOpenSpec(): Record<string, unknown> {
-  const rutaJson = path.resolve(__dirname, "../openapi.json");
-  const rutaYaml = path.resolve(__dirname, "../openapi.yaml");
+  try {
+    const rutaJson = path.resolve(__dirname, "../openapi.json");
+    const rutaYaml = path.resolve(__dirname, "../openapi.yaml");
 
-  if (fs.existsSync(rutaJson)) {
-    return JSON.parse(fs.readFileSync(rutaJson, "utf-8"));
-  }
+    if (fs.existsSync(rutaJson)) {
+      return JSON.parse(fs.readFileSync(rutaJson, "utf-8"));
+    }
 
-  if (fs.existsSync(rutaYaml)) {
-    return YAML.parse(fs.readFileSync(rutaYaml, "utf-8"));
+    if (fs.existsSync(rutaYaml)) {
+      return YAML.parse(fs.readFileSync(rutaYaml, "utf-8"));
+    }
+  } catch (error) {
+    console.error("Advertencia al leer especificación OpenSpec:", error);
   }
 
   return {
@@ -55,9 +60,11 @@ app.use(
 );
 app.use(
   cors({
-    origin: [ORIGEN_CORS, "http://localhost:3000", "http://127.0.0.1:3000"],
+    origin:
+      ORIGEN_CORS === "*"
+        ? "*"
+        : [ORIGEN_CORS, "http://localhost:3000", "http://127.0.0.1:3000"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    credentials: true,
   })
 );
 app.use(express.json({ limit: "2mb" }));
@@ -117,13 +124,23 @@ app.use(
 );
 
 if (require.main === module) {
-  app.listen(PUERTO, async () => {
-    const estadoSupabase = await verificarEstadoSupabase();
+  app.listen(PUERTO, HOST, async () => {
     console.log("==============================================================");
-    console.log(`SEIA Backend (seia-services) activo en http://localhost:${PUERTO}`);
-    console.log(`Swagger UI (OpenSpec) disponible en http://localhost:${PUERTO}/api-docs`);
-    console.log(`Conectado a Supabase: ${estadoSupabase.conectado ? "SÍ" : "NO"}`);
-    console.log(`Detalle: ${estadoSupabase.detalle}`);
+    console.log(
+      `SEIA Backend (seia-services) escuchando en http://${HOST}:${PUERTO}`
+    );
+    console.log(
+      `Swagger UI (OpenSpec) disponible en http://localhost:${PUERTO}/api-docs`
+    );
+    try {
+      const estadoSupabase = await verificarEstadoSupabase();
+      console.log(
+        `Conectado a Supabase: ${estadoSupabase.conectado ? "SÍ" : "NO"}`
+      );
+      console.log(`Detalle: ${estadoSupabase.detalle}`);
+    } catch (error) {
+      console.error("Error verificando estado inicial de Supabase:", error);
+    }
     console.log("==============================================================");
   });
 }

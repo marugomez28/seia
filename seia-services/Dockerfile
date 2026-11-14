@@ -1,7 +1,8 @@
 # ==============================================================================
-# SEIA Backend (seia-services) - Dockerfile con Node.js 20 Alpine
+# SEIA Backend (seia-services) - Dockerfile con Node.js 22 Alpine
+# (Requerido por @supabase/supabase-js para soporte nativo de WebSocket)
 # ==============================================================================
-FROM node:20-alpine
+FROM node:22-alpine
 
 # Directorio de trabajo dentro del contenedor
 WORKDIR /app
