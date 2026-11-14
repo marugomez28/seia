@@ -1,0 +1,205 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "SEIA - Inteligencia Contractual (MGD Bitforge S.A.S.) - API REST",
+    "version": "1.1.0",
+    "description": "Especificación técnica OpenSpec / OpenAPI de la API REST de SEIA (seia-services) conectada en tiempo real a PostgreSQL en Supabase y al dataset oficial de Procesos de Contratación de SECOP II (p6dx-8zbt.json) mediante secopFetcher.ts.",
+    "contact": {
+      "name": "MGD Bitforge S.A.S. — Ingeniería SEIA"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:4000",
+      "description": "Servidor de desarrollo local (seia-services)"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Salud",
+      "description": "Verificación del estado operativo del servidor y conexión directa a Supabase"
+    },
+    {
+      "name": "ParametrosBusqueda",
+      "description": "Operaciones CRUD directas sobre la tabla parametros_busqueda en Supabase"
+    },
+    {
+      "name": "ProcesosSecop",
+      "description": "Operaciones CRUD y sincronización mediante secopFetcher sobre procesos_secop en Supabase"
+    },
+    {
+      "name": "HistorialFiltros",
+      "description": "Auditoría y registro histórico en la tabla historial_filtros en Supabase"
+    }
+  ],
+  "paths": {
+    "/api/salud": {
+      "get": {
+        "tags": ["Salud"],
+        "summary": "Verificar estado operativo del backend y conexión real con Supabase",
+        "operationId": "obtenerEstadoSalud",
+        "responses": {
+          "200": {
+            "description": "Estado operativo del sistema SEIA"
+          }
+        }
+      }
+    },
+    "/api/parametros": {
+      "get": {
+        "tags": ["ParametrosBusqueda"],
+        "summary": "Listar todos los perfiles de la tabla parametros_busqueda en Supabase",
+        "operationId": "listarParametrosBusqueda",
+        "responses": {
+          "200": {
+            "description": "Lista de perfiles de búsqueda obtenidos desde Supabase"
+          }
+        }
+      },
+      "post": {
+        "tags": ["ParametrosBusqueda"],
+        "summary": "Crear un nuevo perfil en la tabla parametros_busqueda de Supabase",
+        "operationId": "crearParametroBusqueda",
+        "responses": {
+          "201": {
+            "description": "Perfil de búsqueda insertado exitosamente en Supabase"
+          },
+          "400": {
+            "description": "Error de validación en los parámetros enviados"
+          }
+        }
+      }
+    },
+    "/api/parametros/{id}": {
+      "get": {
+        "tags": ["ParametrosBusqueda"],
+        "summary": "Obtener un parámetro de búsqueda por su identificador desde Supabase",
+        "operationId": "obtenerParametroPorId",
+        "responses": {
+          "200": {
+            "description": "Perfil de búsqueda encontrado en Supabase"
+          },
+          "404": {
+            "description": "Perfil de búsqueda no encontrado"
+          }
+        }
+      },
+      "put": {
+        "tags": ["ParametrosBusqueda"],
+        "summary": "Actualizar un perfil existente en la tabla parametros_busqueda de Supabase",
+        "operationId": "actualizarParametroBusqueda",
+        "responses": {
+          "200": {
+            "description": "Perfil actualizado correctamente en Supabase"
+          },
+          "404": {
+            "description": "Perfil no encontrado"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["ParametrosBusqueda"],
+        "summary": "Eliminar un perfil de la tabla parametros_busqueda en Supabase",
+        "operationId": "eliminarParametroBusqueda",
+        "responses": {
+          "200": {
+            "description": "Perfil eliminado correctamente de Supabase"
+          },
+          "404": {
+            "description": "Perfil no encontrado"
+          }
+        }
+      }
+    },
+    "/api/procesos": {
+      "get": {
+        "tags": ["ProcesosSecop"],
+        "summary": "Listar y filtrar procesos reales desde la tabla procesos_secop en Supabase",
+        "operationId": "listarProcesosSecop",
+        "responses": {
+          "200": {
+            "description": "Lista de procesos de SECOP II obtenidos desde Supabase"
+          }
+        }
+      },
+      "post": {
+        "tags": ["ProcesosSecop"],
+        "summary": "Insertar un proceso en la tabla procesos_secop de Supabase",
+        "operationId": "crearProcesoSecop",
+        "responses": {
+          "201": {
+            "description": "Proceso registrado exitosamente en Supabase"
+          }
+        }
+      }
+    },
+    "/api/procesos/sincronizar": {
+      "post": {
+        "tags": ["ProcesosSecop"],
+        "summary": "Ejecutar secopFetcher.ts para traer contratos desde SECOP II según parametros_busqueda e insertarlos en procesos_secop (evitando duplicados con uid_secop)",
+        "operationId": "sincronizarProcesosSecop",
+        "responses": {
+          "200": {
+            "description": "Sincronización completada e insertada en procesos_secop de Supabase"
+          }
+        }
+      }
+    },
+    "/api/procesos/{id}": {
+      "patch": {
+        "tags": ["ProcesosSecop"],
+        "summary": "Actualizar seguimiento interno, notas o estado favorito en procesos_secop de Supabase",
+        "operationId": "actualizarProcesoSecop",
+        "responses": {
+          "200": {
+            "description": "Proceso actualizado exitosamente en Supabase"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["ProcesosSecop"],
+        "summary": "Eliminar un proceso de la tabla procesos_secop en Supabase",
+        "operationId": "eliminarProcesoSecop",
+        "responses": {
+          "200": {
+            "description": "Proceso eliminado exitosamente de Supabase"
+          }
+        }
+      }
+    },
+    "/api/historial": {
+      "get": {
+        "tags": ["HistorialFiltros"],
+        "summary": "Consultar registros de la tabla historial_filtros en Supabase",
+        "operationId": "listarHistorialFiltros",
+        "responses": {
+          "200": {
+            "description": "Historial de sincronizaciones obtenido desde Supabase"
+          }
+        }
+      },
+      "post": {
+        "tags": ["HistorialFiltros"],
+        "summary": "Registrar una nueva entrada en historial_filtros de Supabase",
+        "operationId": "crearHistorialFiltro",
+        "responses": {
+          "201": {
+            "description": "Registro de historial creado exitosamente en Supabase"
+          }
+        }
+      }
+    },
+    "/api/historial/{id}": {
+      "delete": {
+        "tags": ["HistorialFiltros"],
+        "summary": "Eliminar un registro de historial_filtros en Supabase",
+        "operationId": "eliminarHistorialFiltro",
+        "responses": {
+          "200": {
+            "description": "Registro eliminado correctamente de Supabase"
+          }
+        }
+      }
+    }
+  }
+}

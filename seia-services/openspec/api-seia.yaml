@@ -1,0 +1,498 @@
+openapi: 3.1.0
+info:
+  title: SEIA - API de Búsqueda, Filtrado y Gestión de Procesos SECOP II
+  version: 1.1.0
+  description: >
+    Especificación técnica de la API REST de SEIA (seia-services) conectada en
+    tiempo real a PostgreSQL en Supabase (SUPABASE_URL y SUPABASE_ANON_KEY) y al
+    endpoint SODA de Datos Abiertos de SECOP II (jbjy-vk9h.json) mediante secopFetcher.ts.
+  contact:
+    name: Arquitectura de Ingeniería SEIA
+servers:
+  - url: http://localhost:4000
+    description: Servidor de desarrollo local (seia-services)
+tags:
+  - name: Salud
+    description: Verificación del estado operativo del servidor y conexión directa a Supabase
+  - name: ParametrosBusqueda
+    description: Operaciones CRUD directas sobre la tabla parametros_busqueda en Supabase
+  - name: ProcesosSecop
+    description: Operaciones CRUD y sincronización mediante secopFetcher sobre procesos_secop en Supabase
+  - name: HistorialFiltros
+    description: Auditoría y registro histórico en la tabla historial_filtros en Supabase
+
+paths:
+  /api/salud:
+    get:
+      tags: [Salud]
+      summary: Verificar estado operativo del backend y conexión real con Supabase
+      operationId: obtenerEstadoSalud
+      responses:
+        "200":
+          description: Estado operativo del sistema SEIA
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado:
+                    type: string
+                    example: operativo
+                  servicio:
+                    type: string
+                    example: seia-services
+                  conectadoSupabase:
+                    type: boolean
+                  timestamp:
+                    type: string
+                    format: date-time
+
+  /api/parametros:
+    get:
+      tags: [ParametrosBusqueda]
+      summary: Listar todos los perfiles de la tabla parametros_busqueda en Supabase
+      operationId: listarParametrosBusqueda
+      parameters:
+        - name: soloActivos
+          in: query
+          required: false
+          description: Filtrar únicamente perfiles con estado activo
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Lista de perfiles de búsqueda obtenidos desde Supabase
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exito:
+                    type: boolean
+                  total:
+                    type: integer
+                  datos:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ParametroBusqueda"
+    post:
+      tags: [ParametrosBusqueda]
+      summary: Crear un nuevo perfil en la tabla parametros_busqueda de Supabase
+      operationId: crearParametroBusqueda
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CrearParametroBusquedaDTO"
+      responses:
+        "201":
+          description: Perfil de búsqueda insertado exitosamente en Supabase
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exito:
+                    type: boolean
+                  mensaje:
+                    type: string
+                  datos:
+                    $ref: "#/components/schemas/ParametroBusqueda"
+        "400":
+          description: Error de validación en los parámetros enviados
+
+  /api/parametros/{id}:
+    get:
+      tags: [ParametrosBusqueda]
+      summary: Obtener un parámetro de búsqueda por su identificador desde Supabase
+      operationId: obtenerParametroPorId
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Perfil de búsqueda encontrado en Supabase
+        "404":
+          description: Perfil de búsqueda no encontrado
+    put:
+      tags: [ParametrosBusqueda]
+      summary: Actualizar un perfil existente en la tabla parametros_busqueda de Supabase
+      operationId: actualizarParametroBusqueda
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ActualizarParametroBusquedaDTO"
+      responses:
+        "200":
+          description: Perfil actualizado correctamente en Supabase
+        "404":
+          description: Perfil no encontrado
+    delete:
+      tags: [ParametrosBusqueda]
+      summary: Eliminar un perfil de la tabla parametros_busqueda en Supabase
+      operationId: eliminarParametroBusqueda
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Perfil eliminado correctamente de Supabase
+        "404":
+          description: Perfil no encontrado
+
+  /api/procesos:
+    get:
+      tags: [ProcesosSecop]
+      summary: Listar y filtrar procesos reales desde la tabla procesos_secop en Supabase
+      operationId: listarProcesosSecop
+      parameters:
+        - name: busqueda
+          in: query
+          schema:
+            type: string
+        - name: modalidad
+          in: query
+          schema:
+            type: string
+        - name: departamento
+          in: query
+          schema:
+            type: string
+        - name: estado
+          in: query
+          schema:
+            type: string
+        - name: cuantiaMinima
+          in: query
+          schema:
+            type: number
+        - name: cuantiaMaxima
+          in: query
+          schema:
+            type: number
+        - name: soloFavoritos
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: Lista de procesos de SECOP II obtenidos desde Supabase
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exito:
+                    type: boolean
+                  total:
+                    type: integer
+                  datos:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ProcesoSecop"
+    post:
+      tags: [ProcesosSecop]
+      summary: Insertar un proceso en la tabla procesos_secop de Supabase
+      operationId: crearProcesoSecop
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProcesoSecop"
+      responses:
+        "201":
+          description: Proceso registrado exitosamente en Supabase
+
+  /api/procesos/sincronizar:
+    post:
+      tags: [ProcesosSecop]
+      summary: Ejecutar secopFetcher.ts para traer contratos desde SECOP II según parametros_busqueda e insertarlos en procesos_secop (evitando duplicados con uid_secop)
+      operationId: sincronizarProcesosSecop
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                parametro_id:
+                  type: string
+                limite:
+                  type: integer
+                  default: 50
+      responses:
+        "200":
+          description: Sincronización completada e insertada en procesos_secop de Supabase
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  exito:
+                    type: boolean
+                  mensaje:
+                    type: string
+                  totalRecibidos:
+                    type: integer
+                  nuevosInsertados:
+                    type: integer
+                  tiempoEjecucionMs:
+                    type: integer
+                  datos:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ProcesoSecop"
+
+  /api/procesos/{id}:
+    patch:
+      tags: [ProcesosSecop]
+      summary: Actualizar seguimiento interno, notas o estado favorito en procesos_secop de Supabase
+      operationId: actualizarProcesoSecop
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                estado_interno:
+                  type: string
+                es_favorito:
+                  type: boolean
+                notas_analista:
+                  type: string
+      responses:
+        "200":
+          description: Proceso actualizado exitosamente en Supabase
+    delete:
+      tags: [ProcesosSecop]
+      summary: Eliminar un proceso de la tabla procesos_secop en Supabase
+      operationId: eliminarProcesoSecop
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Proceso eliminado exitosamente de Supabase
+
+  /api/historial:
+    get:
+      tags: [HistorialFiltros]
+      summary: Consultar registros de la tabla historial_filtros en Supabase
+      operationId: listarHistorialFiltros
+      responses:
+        "200":
+          description: Historial de sincronizaciones obtenido desde Supabase
+    post:
+      tags: [HistorialFiltros]
+      summary: Registrar una nueva entrada en historial_filtros de Supabase
+      operationId: crearHistorialFiltro
+      responses:
+        "201":
+          description: Registro de historial creado exitosamente en Supabase
+
+  /api/historial/{id}:
+    delete:
+      tags: [HistorialFiltros]
+      summary: Eliminar un registro de historial_filtros en Supabase
+      operationId: eliminarHistorialFiltro
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Registro eliminado correctamente de Supabase
+
+components:
+  schemas:
+    ParametroBusqueda:
+      type: object
+      required:
+        - id
+        - nombre_perfil
+        - palabras_clave
+        - activo
+      properties:
+        id:
+          type: string
+          format: uuid
+        nombre_perfil:
+          type: string
+        codigo_unspsc:
+          type: string
+        entidad_objetivo:
+          type: string
+        modalidad:
+          type: string
+        departamento:
+          type: string
+        cuantia_minima:
+          type: number
+        cuantia_maxima:
+          type: number
+          nullable: true
+        palabras_clave:
+          type: array
+          items:
+            type: string
+        activo:
+          type: boolean
+        frecuencia_alerta:
+          type: string
+          enum: [tiempo_real, diaria, semanal]
+        fecha_creacion:
+          type: string
+          format: date-time
+        fecha_actualizacion:
+          type: string
+          format: date-time
+
+    CrearParametroBusquedaDTO:
+      type: object
+      required:
+        - nombre_perfil
+      properties:
+        nombre_perfil:
+          type: string
+        codigo_unspsc:
+          type: string
+        entidad_objetivo:
+          type: string
+        modalidad:
+          type: string
+        departamento:
+          type: string
+        cuantia_minima:
+          type: number
+        cuantia_maxima:
+          type: number
+          nullable: true
+        palabras_clave:
+          type: array
+          items:
+            type: string
+        activo:
+          type: boolean
+        frecuencia_alerta:
+          type: string
+          enum: [tiempo_real, diaria, semanal]
+
+    ActualizarParametroBusquedaDTO:
+      type: object
+      properties:
+        nombre_perfil:
+          type: string
+        codigo_unspsc:
+          type: string
+        entidad_objetivo:
+          type: string
+        modalidad:
+          type: string
+        departamento:
+          type: string
+        cuantia_minima:
+          type: number
+        cuantia_maxima:
+          type: number
+          nullable: true
+        palabras_clave:
+          type: array
+          items:
+            type: string
+        activo:
+          type: boolean
+        frecuencia_alerta:
+          type: string
+          enum: [tiempo_real, diaria, semanal]
+
+    ProcesoSecop:
+      type: object
+      required:
+        - id
+        - uid_secop
+        - referencia_proceso
+        - entidad
+        - objeto_contrato
+        - precio_base
+        - modalidad
+      properties:
+        id:
+          type: string
+          format: uuid
+        uid_secop:
+          type: string
+          description: Identificador único del proceso en SECOP II para evitar duplicados
+          example: CO1.REQ.6849201
+        id_proceso_secop:
+          type: string
+          example: CO1.REQ.6849201
+        referencia_proceso:
+          type: string
+        entidad:
+          type: string
+        nit_entidad:
+          type: string
+        departamento:
+          type: string
+        ciudad:
+          type: string
+        objeto_contrato:
+          type: string
+        descripcion_proceso:
+          type: string
+        precio_base:
+          type: number
+        modalidad:
+          type: string
+        tipo_contrato:
+          type: string
+        codigo_unspsc:
+          type: string
+        estado_proceso:
+          type: string
+        estado_interno:
+          type: string
+          enum: [Detectado, En análisis, Estructurando oferta, Presentado, Descartado]
+        fecha_publicacion:
+          type: string
+          format: date-time
+        fecha_limite_recepcion:
+          type: string
+          format: date-time
+        url_proceso:
+          type: string
+        es_favorito:
+          type: boolean
+        notas_analista:
+          type: string
+        fecha_sincronizacion:
+          type: string
+          format: date-time

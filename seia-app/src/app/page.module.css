@@ -1,0 +1,175 @@
+.disposicionGeneral {
+  display: flex;
+  min-height: 100vh;
+}
+
+.areaContenidoPrincipal {
+  flex: 1;
+  padding: 36px 42px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 1480px;
+}
+
+.encabezadoSuperior {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.bloqueTitulos {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.migasDePan {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+}
+
+.tituloVista {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.descripcionVista {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.rejillaMetricasEjecutivas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.tarjetaMetricaGlass {
+  background: var(--glass-surface);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px;
+  box-shadow: var(--shadow-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tarjetaMetricaDestacada {
+  border-color: var(--accent-primary);
+  background: linear-gradient(
+    145deg,
+    rgba(92, 18, 25, 0.22),
+    rgba(20, 23, 29, 0.76)
+  );
+}
+
+.filaSuperiorMetrica {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.iconoCajaMetrica {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(92, 18, 25, 0.26);
+  border: 1px solid var(--accent-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+}
+
+.cifraMetrica {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.notaMetrica {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+
+.panelOpenSpec {
+  background: var(--glass-surface);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.rejillaSpecs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.tarjetaCapacidad {
+  background: rgba(11, 12, 14, 0.55);
+  border: 1px solid var(--glass-border);
+  border-left: 3px solid var(--accent-primary);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nombreCapacidad {
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.descripcionCapacidad {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.listaEndpoints {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--text-primary);
+}
+
+.itemEndpoint {
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+}
+
+@media (max-width: 1024px) {
+  .disposicionGeneral {
+    flex-direction: column;
+  }
+
+  .areaContenidoPrincipal {
+    padding: 24px 20px;
+  }
+}

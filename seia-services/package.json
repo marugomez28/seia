@@ -1,0 +1,38 @@
+{
+  "name": "seia-services",
+  "version": "1.1.0",
+  "description": "Backend API REST para SEIA - Conectado a Supabase PostgreSQL y Datos Abiertos SECOP II",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "openspec:init": "openspec init --tools antigravity --language Español --no-animation",
+    "openspec:validate": "openspec validate --all --strict",
+    "openspec:list": "openspec list --specs",
+    "openspec:export": "ts-node src/scripts/exportarEspecificacion.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.48.1",
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "swagger-ui-express": "^5.0.1",
+    "yaml": "^2.7.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@fission-ai/openspec": "latest",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/morgan": "^1.9.9",
+    "@types/node": "^22.10.5",
+    "@types/swagger-ui-express": "^4.1.8",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.7.3"
+  }
+}

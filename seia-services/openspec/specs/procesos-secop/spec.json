@@ -1,0 +1,46 @@
+﻿{
+  "id": "procesos-secop",
+  "title": "procesos-secop",
+  "overview": "Gestiona la extracción real de procesos desde el endpoint SODA de Datos Abiertos de SECOP II (`https://www.datos.gov.co/resource/jbjy-vk9h.json`) mediante `secopFetcher.ts` y su persistencia en la tabla `procesos_secop` de Supabase evitando duplicados por `uid_secop`.",
+  "requirementCount": 3,
+  "requirements": [
+    {
+      "name": "Sincronizar contratos reales con secopFetcher",
+      "text": "El sistema SHALL implementar el servicio `secopFetcher.ts` que consulta los parámetros activos en `parametros_busqueda`, realiza la petición filtrada a `https://www.datos.gov.co/resource/jbjy-vk9h.json` por modalidades, códigos UNSPSC y palabras clave, e inserta los resultados en `procesos_secop` usando `uid_secop` como clave única de conflicto.",
+      "scenarios": [
+        {
+          "name": "Sincronizacion automatica basada en parametros activos",
+          "rawText": "- **WHEN** se invoca `POST /api/procesos/sincronizar`\n- **THEN** `secopFetcher` obtiene los parámetros activos de Supabase, consulta la API SODA de SECOP II, ejecuta `upsert` en `procesos_secop` con `onConflict: 'uid_secop'` y retorna los contratos reales sincronizados"
+        }
+      ]
+    },
+    {
+      "name": "Consultar procesos reales desde Supabase",
+      "text": "El sistema SHALL exponer el endpoint `GET /api/procesos` que consulta directamente la tabla `procesos_secop` en Supabase aplicando filtros dinámicos de búsqueda, modalidad, departamento, estado y cuantía.",
+      "scenarios": [
+        {
+          "name": "Lectura de contratos reales en el dashboard",
+          "rawText": "- **WHEN** el dashboard de `seia-app` solicita `GET /api/procesos`\n- **THEN** el controlador consulta la tabla `procesos_secop` en Supabase y retorna código HTTP 200 con los contratos reales"
+        }
+      ]
+    },
+    {
+      "name": "Actualizar y eliminar procesos en Supabase",
+      "text": "El sistema SHALL permitir actualizar el seguimiento interno (`PATCH /api/procesos/:id`) y eliminar registros (`DELETE /api/procesos/:id`) directamente en la tabla `procesos_secop` de Supabase.",
+      "scenarios": [
+        {
+          "name": "Actualizacion de estado interno y notas en Supabase",
+          "rawText": "- **WHEN** el cliente envía `PATCH /api/procesos/:id` con `es_favorito`, `estado_interno` o `notas_analista`\n- **THEN** el controlador actualiza la fila en `procesos_secop` y retorna código HTTP 200 con el proceso actualizado"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": "1.0.0",
+    "format": "openspec"
+  },
+  "root": {
+    "path": "C:\\Users\\mmaru\\OneDrive\\Documentos\\automatizar secopII\\sep-app",
+    "source": "nearest"
+  }
+}
