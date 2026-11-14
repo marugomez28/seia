@@ -17,7 +17,7 @@ COPY . .
 # Argumentos de compilación (build args) para variables públicas de Next.js
 ARG NEXT_PUBLIC_API_URL=http://localhost:4000
 ARG NEXT_PUBLIC_SUPABASE_URL=https://ypbcxctawmwfovusbive.supabase.co
-ARG NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_secret_EAD4E4gUooBw6cfS16WZhw_sBG4exaM
+ARG NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable___a9Pc74iqkqGOwpgdE-7Q_GOp0PKX8
 
 # Variables de entorno expuestas durante npm run build
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
